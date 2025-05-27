@@ -77,7 +77,7 @@ function Game() {
     }
     return count;
   }
-  function runIteration() {
+  function runIteration(customInterval = interval) {
     if (!isRunning) return;
 
     const newBoard = makeEmptyBoard();
@@ -94,12 +94,12 @@ function Game() {
     boardRef.current = newBoard;
     setCells(makeCells());
 
-    timeoutRef.current = setTimeout(runIteration, interval);
+   timeoutRef.current = setTimeout(() => runIteration(customInterval), customInterval);
   }
-  function runGame() {
-    setIsRunning(true);
-    runIteration();
-  }
+  function runGame(customInterval = interval) {
+  setIsRunning(true);
+  runIteration(customInterval);
+}
   function stopGame() {
     setIsRunning(false);
     if (timeoutRef.current) {
@@ -132,13 +132,13 @@ function Game() {
     setCells(makeCells());
   }
   function handleSpeedChange(e) {
-    const newInterval = Number(e.target.value);
-    setIntervalValue(newInterval);
-    if (isRunning) {
-      stopGame();
-      runGame();
-    }
+  const newInterval = Number(e.target.value);
+  setIntervalValue(newInterval);
+  if (isRunning) {
+    stopGame();
+    runGame(newInterval);
   }
+}
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
