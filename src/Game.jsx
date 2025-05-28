@@ -78,10 +78,10 @@ function Game() {
     return count;
   }
   function runIteration() {
-    console.log("In run iteration", isRunning)
+    // console.log("In run iteration", isRunning)
     if (!isRunning) return;//we have a problem here, not now
 
-    console.log("after return", isRunning);
+    // console.log("after return", isRunning);
 
     const newBoard = makeEmptyBoard();
     for (let y = 0; y < rows; y++) {
@@ -104,7 +104,7 @@ function Game() {
   function runGame() {
 
     setIsRunning(true); //we have a problem here, due to async nature of useState
-    console.log("in run block", isRunning);
+    // console.log("in run block", isRunning);
     // runIteration();
   }
   function stopGame() {
@@ -116,10 +116,10 @@ function Game() {
   }
 
   function handleStartStop() {
-    if (isRunning) {// we have a problem here
+    if (isRunning) {// we have a problem here,not now
       stopGame();
     } else {
-      console.log("in else block", isRunning)
+      // console.log("in else block", isRunning)
       runGame();
     }
   }
