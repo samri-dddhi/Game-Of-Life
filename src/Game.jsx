@@ -20,15 +20,15 @@ function Game() {
     return board;
   }
 
-  const boardRef= useRef(makeEmptyBoard());
-  const[cells, setCells] = useState([]);
-  const boardElemRef= useRef(null);
+  const boardRef = useRef(makeEmptyBoard());
+  const [cells, setCells] = useState([]);
+  const boardElemRef = useRef(null);
   const [interval, setIntervalValue] = useState(100);
   const [isRunning, setIsRunning] = useState(false);
 
   const timeoutRef = useRef(null);
 
-  
+
   function makeCells() {
     let cells = [];
     for (let y = 0; y < rows; y++) {
@@ -49,7 +49,7 @@ function Game() {
     };
   }
   function handleClick(event) {
-     if (isRunning) return;
+    if (isRunning) return;
     const elemOffset = getElementOffset();
     const offsetX = event.clientX - elemOffset.x;
     const offsetY = event.clientY - elemOffset.y;
@@ -62,12 +62,12 @@ function Game() {
       setCells(makeCells());
     }
   }
-  
+
   function countNeighbors(x, y) {
     let count = 0;
     for (let dy = -1; dy <= 1; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
-        if (dx === 0 && dy === 0) continue; 
+        if (dx === 0 && dy === 0) continue;
         const nx = x + dx;
         const ny = y + dy;
         if (nx >= 0 && nx < cols && ny >= 0 && ny < rows && boardRef.current[ny][nx]) {
@@ -77,8 +77,8 @@ function Game() {
     }
     return count;
   }
-  function runIteration(customInterval = interval,forceRun = false) {
-    if (!isRunning && !forceRun) return;
+  function runIteration() {
+    if (!isRunning) return;
 
     const newBoard = makeEmptyBoard();
     for (let y = 0; y < rows; y++) {
@@ -94,17 +94,12 @@ function Game() {
     boardRef.current = newBoard;
     setCells(makeCells());
 
-   timeoutRef.current = setTimeout(() => {
-    if (isRunning) {
-      runIteration(customInterval, false);
-    }
-  }, customInterval);
+   if (isRunning)
+      timeoutRef.current = setTimeout(() => runIteration(), interval);
   }
-
-  function runGame(customInterval = interval) {
-    setIsRunning(true);
-  runIteration(customInterval, true);
-  }
+  function runGame() {
+  setIsRunning(true);
+}
   function stopGame() {
     setIsRunning(false);
     if (timeoutRef.current) {
@@ -112,7 +107,6 @@ function Game() {
       timeoutRef.current = null;
     }
   }
-  
   function handleStartStop() {
     if (isRunning) {
       stopGame();
@@ -137,20 +131,26 @@ function Game() {
     setCells(makeCells());
   }
   function handleSpeedChange(e) {
-    const newInterval = Number(e.target.value);
-    setIntervalValue(newInterval);
-    if (isRunning) {
-      stopGame();
-      runGame(newInterval);
-    }
+  const newInterval = Number(e.target.value);
+  setIntervalValue(newInterval);
+  if (isRunning) {
+    stopGame();
+    setTimeout(() => runGame(), 0)
   }
+}
+useEffect(() => {
+    if (isRunning) {
+      runIteration();
+    }
+  }, [isRunning]);
+
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
-  
-  const gridStyle = {
+
+ const gridStyle = {
     backgroundImage: `
       linear-gradient(#333 1px, transparent 1px),
       linear-gradient(90deg, #333 1px, transparent 1px)
@@ -160,7 +160,7 @@ function Game() {
     margin: '0 auto',
   };
 
-  return(
+  return (
     <div>
       <div className="text-center text-3xl font-bold my-4 text-black">
       Conway's Game of Life
@@ -200,5 +200,5 @@ function Game() {
     </div>
   );
 }
-export default Game;
+  export default Game; 
 
