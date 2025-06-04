@@ -77,8 +77,8 @@ function Game() {
     }
     return count;
   }
-  function runIteration(customInterval = interval) {
-    if (!isRunning) return;
+  function runIteration(customInterval = interval,forceRun = false) {
+    if (!isRunning && !forceRun) return;
 
     const newBoard = makeEmptyBoard();
     for (let y = 0; y < rows; y++) {
@@ -94,12 +94,17 @@ function Game() {
     boardRef.current = newBoard;
     setCells(makeCells());
 
-   timeoutRef.current = setTimeout(() => runIteration(customInterval), customInterval);
+   timeoutRef.current = setTimeout(() => {
+    if (isRunning) {
+      runIteration(customInterval, false);
+    }
+  }, customInterval);
   }
+
   function runGame(customInterval = interval) {
-  setIsRunning(true);
-  runIteration(customInterval);
-}
+    setIsRunning(true);
+  runIteration(customInterval, true);
+  }
   function stopGame() {
     setIsRunning(false);
     if (timeoutRef.current) {
@@ -132,20 +137,20 @@ function Game() {
     setCells(makeCells());
   }
   function handleSpeedChange(e) {
-  const newInterval = Number(e.target.value);
-  setIntervalValue(newInterval);
-  if (isRunning) {
-    stopGame();
-    runGame(newInterval);
+    const newInterval = Number(e.target.value);
+    setIntervalValue(newInterval);
+    if (isRunning) {
+      stopGame();
+      runGame(newInterval);
+    }
   }
-}
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
   
-const gridStyle = {
+  const gridStyle = {
     backgroundImage: `
       linear-gradient(#333 1px, transparent 1px),
       linear-gradient(90deg, #333 1px, transparent 1px)
@@ -195,5 +200,5 @@ const gridStyle = {
     </div>
   );
 }
-  export default Game; 
+export default Game;
 
